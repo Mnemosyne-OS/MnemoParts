@@ -1,0 +1,44 @@
+{
+  "name": "@mnemosyne-plugins/mnemo-parts",
+  "displayName": "Parts",
+  "version": "0.1.0",
+  "category": "Productivity",
+  "icon": "icon.svg",
+  "vendor": "Mnemosyne Labs",
+  "license": "MIT",
+  "description": "Open a 3D model you bring (STEP, GLB, glTF, OBJ, STL) and explode it part by part, layer by layer. Factory part codes are decoded into readable names, which you can correct. Write a note on any part, then keep the whole model sheet in your memory so the chat can find it. Works offline; the file stays on your machine.",
+  "descriptionI18n": {
+    "en": "Open a 3D model you bring (STEP, GLB, glTF, OBJ, STL) and explode it part by part, layer by layer. Factory part codes are decoded into readable names, which you can correct. Write a note on any part, then keep the whole model sheet in your memory so the chat can find it. Works offline; the file stays on your machine.",
+    "fr": "Ouvrez un modèle 3D que vous apportez (STEP, GLB, glTF, OBJ, STL) et éclatez-le pièce par pièce, couche par couche. Les codes d'usine des pièces sont traduits en noms lisibles, que vous pouvez corriger. Écrivez une note sur une pièce, puis gardez la fiche du modèle dans votre mémoire pour que le chat la retrouve. Fonctionne hors ligne ; le fichier reste sur votre machine.",
+    "es": "Abre un modelo 3D que tú aportas (STEP, GLB, glTF, OBJ, STL) y despiézalo pieza a pieza, capa a capa. Los códigos de fábrica de las piezas se traducen en nombres legibles, que puedes corregir. Escribe una nota sobre una pieza y guarda la ficha del modelo en tu memoria para que el chat la encuentre. Funciona sin conexión; el archivo se queda en tu máquina."
+  },
+  "keywords": [
+    "3d",
+    "cad",
+    "step",
+    "glb",
+    "exploded-view",
+    "repair",
+    "parts",
+    "three.js"
+  ],
+  "permissions": [
+    "vault:write",
+    "dialog:open"
+  ],
+  "repository": "https://github.com/Mnemosyne-OS/MnemoParts",
+  "updateStrategy": "git",
+  "entrypoints": {
+    "renderer": "index.html"
+  },
+  "widgets": [
+    {
+      "id": "mnemo-parts-main",
+      "icon": "🧩",
+      "name": "Parts",
+      "route": "index.html",
+      "defaultWidth": 1180,
+      "defaultHeight": 800
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="Open a 3D model you bring, explode it part by part, name the parts and keep your notes on them in your memory." />
+    <title>Parts</title>
+  </head>
+  <body>
+    <!--
+      #root is not empty on purpose: a cartridge whose module fails to load is
+      otherwise a white rectangle, and the host cannot see inside the frame.
+      The listener below writes what went wrong on that rectangle; React
+      replaces all of it on its first paint.
+    -->
+    <div id="root">
+      <div id="boot-report" style="font:13px/1.6 system-ui,sans-serif;color:#8a94a3;padding:22px;max-width:760px">
+        <strong style="font-weight:600">Parts is starting…</strong>
+        <pre id="boot-what" style="white-space:pre-wrap;color:#e2786b;margin:14px 0 0"></pre>
+      </div>
+    </div>
+    <script>
+      (function () {
+        var what = document.getElementById('boot-what');
+        function say(line) { if (what) what.textContent += line + '\n'; }
+        window.addEventListener('error', function (e) {
+          if (e.target && e.target !== window && e.target.src !== undefined) say('could not load: ' + e.target.src);
+          else say((e.message || 'script error') + (e.filename ? '  @ ' + e.filename + ':' + e.lineno : ''));
+        }, true);
+        window.addEventListener('unhandledrejection', function (e) {
+          var r = e.reason;
+          say('rejected: ' + ((r && r.message) || r));
+        });
+        setTimeout(function () {
+          if (document.getElementById('boot-report')) say('the app did not mount after 8 s.');
+        }, 8000);
+      })();
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

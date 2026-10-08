@@ -1,0 +1,38 @@
+{
+  "name": "@mnemosyne-plugins/mnemo-parts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Open a 3D model you bring (STEP, GLB, glTF, OBJ, STL), explode it part by part, name the parts and keep your notes on them in your memory.",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "dev:cartridge": "vite",
+    "build": "tsc --noEmit -p tsconfig.json && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit -p tsconfig.eslint.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@mnemosyne_os/cartridge-sdk": "workspace:*",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "three": "^0.159.0"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.4.8",
+    "@testing-library/react": "^16.0.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@types/three": "^0.159.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "jsdom": "^29.1.1",
+    "typescript": "^5.5.3",
+    "vite": "^5.4.1",
+    "vitest": "^3.2.7"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mnemosyne-OS/MnemoParts"
+  }
+}

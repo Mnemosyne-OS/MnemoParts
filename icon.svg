@@ -1,0 +1,14 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Parts">
+  <defs>
+    <linearGradient id="parts-grad" x1="6" y1="42" x2="42" y2="6" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#60a5fa"/>
+      <stop offset="1" stop-color="#a78bfa"/>
+    </linearGradient>
+  </defs>
+  <path d="M24 4L35 9.5L24 15L13 9.5Z" fill="url(#parts-grad)" fill-opacity="0.16" stroke="url(#parts-grad)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M9 17L20 22.5V35L9 29.5Z" stroke="url(#parts-grad)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M39 17L28 22.5V35L39 29.5Z" fill="url(#parts-grad)" fill-opacity="0.16" stroke="url(#parts-grad)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M24 39V44" stroke="url(#parts-grad)" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="1 4"/>
+  <path d="M5 14L7 15" stroke="url(#parts-grad)" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M43 14L41 15" stroke="url(#parts-grad)" stroke-width="2.4" stroke-linecap="round"/>
+</svg>

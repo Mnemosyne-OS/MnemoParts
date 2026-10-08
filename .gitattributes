@@ -1,0 +1,9 @@
+# Text is stored LF and checked out however the contributor's platform wants it.
+* text=auto eol=lf
+
+# The STEP reader and the Draco decoder ship as WebAssembly. Git detects that
+# on its own, and this says so anyway: a line-ending normalisation applied to a
+# .wasm does not fail, it produces a module that refuses to load.
+*.wasm binary
+*.png  binary
+*.jpg  binary
