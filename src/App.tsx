@@ -26,6 +26,8 @@ import {
   writeHandoff, writeLibrary, writeModel,
 } from './store';
 import { Viewer, type ExplodeMode } from './viewer/Viewer';
+import { withName, withNote } from './partsAgent';
+import { PartsAgentActions } from './PartsAgentActions';
 
 type Status =
   | { kind: 'idle' }
@@ -409,16 +411,41 @@ export default function App() {
   }, [file, store.kind, t]);
 
   const rename = (raw: string, value: string) => {
-    if ((record.names[raw] ?? '') === value.trim()) return;
-    save({ ...record, names: { ...record.names, [raw]: value.trim() } });
+    const next = withName(record, raw, value);
+    if (next) save(next);
   };
   const writeNote = (raw: string, value: string) => {
-    if ((record.notes[raw] ?? '') === value) return;
-    save({ ...record, notes: { ...record.notes, [raw]: value } });
+    const next = withNote(record, raw, value);
+    if (next) save(next);
   };
 
-  const keep = async () => {
-    if (!file) return;
+  /**
+   * The agent's write (doc 149): the same record change as `save`, but it answers only once
+   * the store has written it, and refuses while the store is unread (`save` keeps the change on
+   * screen only, which a person sees and an agent would not).
+   */
+  const writeRecord = async (next: ModelRecord): Promise<void> => {
+    if (!file || store.kind !== 'ok') throw new Error('STORE_NOT_READY: the names of this model are not read yet');
+    setRecord(next);
+    try {
+      await writeModel(file.key, next);
+    } catch (e) {
+      console.warn('[parts] names not saved', e);
+      if (alive.current) setStore({ kind: 'error', text: e instanceof StoreFullError ? t('store.full') : t('store.failed', { why: (e as Error).message }) });
+      throw e;
+    }
+  };
+
+  /** A library row's « open »: the model's tab if it is open, else its file, read again. */
+  const openEntry = (e: LibraryEntry) => {
+    const tab = tabsWithLive().find(x => x.file.key === e.key);
+    if (tab) switchTo(tab.id);
+    else if (e.path) void open(fromHost(e.path));
+  };
+
+  /** Keeps the sheet; answers how it ended, as the line under the button says it. */
+  const keep = async (): Promise<Memory> => {
+    if (!file) return { kind: 'idle' };
     setMemory({ kind: 'saving' });
     const sheet = buildSheet(file.name, parts.map(p => ({ raw: p.raw, name: p.name, note: p.note, ownName: p.own })), {
       title: t('sheet.title'), file: t('sheet.file'), parts: t('sheet.parts'), named: t('sheet.named'),
@@ -426,10 +453,14 @@ export default function App() {
     });
     try {
       const done = await keepSheet(sheet);
-      if (alive.current) setMemory({ kind: 'done', ...done });
+      const out: Memory = { kind: 'done', ...done };
+      if (alive.current) setMemory(out);
+      return out;
     } catch (e) {
       console.warn('[parts] sheet not written', e);
-      if (alive.current) setMemory({ kind: 'error', text: e instanceof PermissionError ? t('memory.noPermission') : t('memory.failed', { why: (e as Error).message }) });
+      const out: Memory = { kind: 'error', text: e instanceof PermissionError ? t('memory.noPermission') : t('memory.failed', { why: (e as Error).message }) };
+      if (alive.current) setMemory(out);
+      return out;
     }
   };
 
@@ -454,6 +485,20 @@ export default function App() {
 
   return (
     <div className="app" onDragOver={(e) => { e.preventDefault(); setOver(true); }} onDragLeave={() => setOver(false)} onDrop={onDrop}>
+      {/* One window answers agents: the main one. A detached copy of a model serves nothing. */}
+      {!INSTANCE && (
+        <PartsAgentActions
+          tabs={tabsWithLive().map(tab => ({ id: tab.id, name: tab.file.name, path: tab.file.path ?? null, parts: tab.raws.length }))}
+          activeTab={activeTab}
+          reading={status.kind === 'reading' ? status.file : null}
+          failure={status.kind === 'error' ? t(status.key, status.vars) : null}
+          parts={parts} record={record} selected={selected} hidden={hidden} explode={explode} mode={mode}
+          store={store.kind} memory={memory.kind} library={library}
+          select={setSelected} setHidden={setHidden} setExplode={setExplode} setMode={setMode}
+          writeRecord={writeRecord} switchTo={switchTo} openEntry={openEntry} keep={keep}
+          closeTab={closeTab} view={view} setView={setView} setFilter={setFilter}
+        />
+      )}
       <aside className="side">
         <div className={`drop${over ? ' over' : ''}`}>
           <div className="drop-title">{t('drop.title')}</div>
@@ -556,11 +601,7 @@ export default function App() {
         </div>
         {view === 'library' && status.kind !== 'reading' && (
           <LibraryView entries={library} written={written} lang={lang} t={t}
-            onOpen={(e) => {
-              const tab = tabsWithLive().find(x => x.file.key === e.key);
-              if (tab) switchTo(tab.id);
-              else if (e.path) void open(fromHost(e.path));
-            }}
+            onOpen={openEntry}
             onRemove={(key) => changeLibrary(l => removeEntry(l, key))} />
         )}
       </main>
@@ -618,6 +659,10 @@ function PartEditor({ part, t, onRename, onNote }: {
 }) {
   const [name, setName] = useState(part.name);
   const [note, setNote] = useState(part.note);
+  // A change made elsewhere (an agent, doc 149) reaches the fields: kept stale, the next blur
+  // would write the old value back over it.
+  useEffect(() => { setName(part.name); }, [part.name]);
+  useEffect(() => { setNote(part.note); }, [part.note]);
   // Leaving the field unchanged writes nothing: the decoded name must never be
   // saved as if the person had typed it. An emptied field brings it back.
   const commit = () => { if (name.trim() !== part.name) onRename(part.raw, name); };

@@ -1,7 +1,7 @@
 {
   "name": "@mnemosyne-plugins/mnemo-parts",
   "displayName": "Parts",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "category": "Productivity",
   "icon": "icon.svg",
   "vendor": "Mnemosyne Labs",
@@ -40,5 +40,262 @@
       "defaultWidth": 1180,
       "defaultHeight": 800
     }
-  ]
+  ],
+  "agentActions": [
+    {
+      "id": "models",
+      "summary": "List the models open in tabs and the ones in the library, and say if a file is being read",
+      "effect": "read"
+    },
+    {
+      "id": "parts",
+      "summary": "List the parts of the model on screen: number, name, factory code, note, hidden or not",
+      "details": "Answers the total and at most limit rows. text filters on the name and the code. namesKept false means names and notes cannot be written yet.",
+      "effect": "read",
+      "params": {
+        "text": {
+          "type": "string",
+          "description": "Words to look for in a part's name or code",
+          "maxLength": 200
+        },
+        "limit": {
+          "type": "number",
+          "description": "How many parts to answer, 1 to 500 (100 by default)",
+          "minimum": 1,
+          "maximum": 500
+        }
+      }
+    },
+    {
+      "id": "selectPart",
+      "summary": "Select a part, as a click on its row does: it lights up in the 3D model",
+      "details": "Give number (from 1) or part, said as the person says it. Several matches are refused with their numbers (AMBIGUOUS): pick one and call again.",
+      "effect": "write",
+      "params": {
+        "part": {
+          "type": "string",
+          "description": "The part as the person says it (« le roulement », « boulon 2 »), its factory code or its name; give this or number",
+          "maxLength": 300
+        },
+        "number": {
+          "type": "number",
+          "description": "The part's number in the list, from 1, as parts lists it",
+          "minimum": 1,
+          "maximum": 100000
+        }
+      }
+    },
+    {
+      "id": "showParts",
+      "summary": "Hide a part, show only one part, bring one hidden part back, or show every part again, as the Hide, Isolate and Show all buttons do",
+      "details": "hide, isolate and show act on part, or on the selected part when part is not given; the part is selected first, as with the buttons.",
+      "effect": "write",
+      "params": {
+        "how": {
+          "type": "string",
+          "description": "hide, isolate, show (one hidden part back) or all",
+          "enum": [
+            "hide",
+            "isolate",
+            "show",
+            "all"
+          ]
+        },
+        "part": {
+          "type": "string",
+          "description": "The part as the person says it (« le roulement », « boulon 2 »), its factory code or its name; give this or number",
+          "maxLength": 300
+        },
+        "number": {
+          "type": "number",
+          "description": "The part's number in the list, from 1, as parts lists it",
+          "minimum": 1,
+          "maximum": 100000
+        }
+      },
+      "required": [
+        "how"
+      ]
+    },
+    {
+      "id": "explode",
+      "summary": "Open the model part by part, as the slider does, by layers or radially",
+      "effect": "write",
+      "params": {
+        "amount": {
+          "type": "number",
+          "description": "0 is assembled, 1 is fully open",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "mode": {
+          "type": "string",
+          "description": "layers or radial",
+          "enum": [
+            "layers",
+            "radial"
+          ]
+        }
+      }
+    },
+    {
+      "id": "renamePart",
+      "summary": "Give a part a readable name, kept with the model, as typing in the name field does",
+      "details": "Answers once the name is written. Without name, the part goes back to its decoded or factory name. Refused while the model's names are not read.",
+      "effect": "write",
+      "params": {
+        "part": {
+          "type": "string",
+          "description": "The part as the person says it (« le roulement », « boulon 2 »), its factory code or its name; give this or number",
+          "maxLength": 300
+        },
+        "number": {
+          "type": "number",
+          "description": "The part's number in the list, from 1, as parts lists it",
+          "minimum": 1,
+          "maximum": 100000
+        },
+        "name": {
+          "type": "string",
+          "description": "The new name",
+          "maxLength": 200
+        }
+      }
+    },
+    {
+      "id": "notePart",
+      "summary": "Write a note on a part, kept with the model, as the note field does",
+      "details": "Replaces the part's note; without note, the note is emptied. Answers once it is written.",
+      "effect": "write",
+      "params": {
+        "part": {
+          "type": "string",
+          "description": "The part as the person says it (« le roulement », « boulon 2 »), its factory code or its name; give this or number",
+          "maxLength": 300
+        },
+        "number": {
+          "type": "number",
+          "description": "The part's number in the list, from 1, as parts lists it",
+          "minimum": 1,
+          "maximum": 100000
+        },
+        "note": {
+          "type": "string",
+          "description": "The note",
+          "maxLength": 4000
+        }
+      }
+    },
+    {
+      "id": "openModel",
+      "summary": "Bring an open model's tab to the front, or reopen a model from the library",
+      "details": "Takes the model as the person says it (« le moteur » for moteur_v2.step), its file name, its path or a tab id. A file only dropped, never picked, cannot be reopened: the person must drop it again. A large file takes seconds; models says when it is open.",
+      "effect": "write",
+      "params": {
+        "model": {
+          "type": "string",
+          "description": "The model as the person says it, its file name, path or tab id",
+          "maxLength": 1000
+        }
+      },
+      "required": [
+        "model"
+      ]
+    },
+    {
+      "id": "closeModel",
+      "summary": "Close an open model's tab, as its × does; it stays in the library",
+      "details": "Takes the model as the person says it, its file name or tab id. A model only dropped, never picked, is refused: closed, it would come back only by dropping it again.",
+      "effect": "write",
+      "params": {
+        "model": {
+          "type": "string",
+          "description": "The open model as the person says it, its file name or tab id",
+          "maxLength": 1000
+        }
+      },
+      "required": [
+        "model"
+      ]
+    },
+    {
+      "id": "showView",
+      "summary": "Show a screen, as the side buttons do: the model, the library of models opened, the sources of free models, or the Sketchfab search",
+      "effect": "write",
+      "params": {
+        "view": {
+          "type": "string",
+          "description": "model, library, sources or sketchfab",
+          "enum": [
+            "model",
+            "library",
+            "sources",
+            "sketchfab"
+          ]
+        }
+      },
+      "required": [
+        "view"
+      ]
+    },
+    {
+      "id": "closeView",
+      "summary": "Close the library, the sources or Sketchfab and come back to the model, as the back button does",
+      "effect": "write"
+    },
+    {
+      "id": "filterParts",
+      "summary": "Type words in the parts list's filter, as the filter field does; without text the whole list comes back",
+      "details": "Answers how many parts the list shows and the first of them.",
+      "effect": "write",
+      "params": {
+        "text": {
+          "type": "string",
+          "description": "Words a part's name or code holds",
+          "maxLength": 200
+        }
+      }
+    },
+    {
+      "id": "keepSheet",
+      "summary": "Keep the model sheet (every part's name and note) in this app's memory vault, as the keep button does",
+      "details": "Writes into the app's own sandbox vault so the chat can find it. Answers the vault once written.",
+      "effect": "write"
+    }
+  ],
+  "agentGuide": [
+    "Name a part or a model the way the person says it (« le roulement », « le moteur »): Parts finds it by its words, its code or its number. Several matches are refused with their names (AMBIGUOUS): pick one and call again.",
+    "To look at something: selectPart lights a part up, showParts hides, isolates or brings parts back, explode opens the model, filterParts narrows the list.",
+    "Screens: showView for the model, the library, the sources or Sketchfab; closeView comes back to the model. openModel brings a model to the front or reopens it; closeModel closes its tab.",
+    "A part's name or note: renamePart, notePart. To keep the whole sheet in memory: keepSheet."
+  ],
+  "voiceCommands": {
+    "fr": [
+      "isole le roulement",
+      "ouvre le moteur",
+      "éclate le modèle à moitié",
+      "cache le carter",
+      "montre à nouveau le carter",
+      "renomme la vis en vis M6",
+      "montre la bibliothèque"
+    ],
+    "en": [
+      "isolate the bearing",
+      "open the engine",
+      "explode the model halfway",
+      "hide the housing",
+      "show the housing again",
+      "rename the screw to M6 screw",
+      "show the library"
+    ],
+    "es": [
+      "aísla el rodamiento",
+      "abre el motor",
+      "separa el modelo a la mitad",
+      "oculta la carcasa",
+      "vuelve a mostrar la carcasa",
+      "renombra el tornillo como tornillo M6",
+      "muestra la biblioteca"
+    ]
+  }
 }
