@@ -15,6 +15,19 @@
 html, body, #root { margin: 0; height: 100%; }
 body { background: var(--p-bg); color: var(--p-text); font: 13px/1.45 system-ui, sans-serif; }
 
+/* Inside a Mnemosyne OS window (2026-11-12): the window paints the theme's
+   ground (glass, grey or white) and this frame stays transparent. Painted
+   here, the ground variable showed the board's colour, a black block in a
+   glass window. main.tsx sets `in-host` before the first paint. */
+html.in-host, html.in-host body, html.in-host .library, html.in-host .sources, html.in-host .sketchfab { background: transparent; }
+/* The frame's color-scheme must be the app's: when they differ, Chromium
+   paints an opaque white canvas behind a transparent page (measured). */
+:root { color-scheme: dark; }
+:root[data-theme='light'] { color-scheme: light; }
+/* The 3D view stays mounted under these panels: hidden while one is open,
+   so a transparent panel never shows the model through it. */
+html.in-host .stage:has(.library, .sources, .sketchfab) > .canvas-host { visibility: hidden; }
+
 .app { display: grid; grid-template-columns: 320px 1fr; height: 100%; }
 .side {
   background: var(--p-panel); border-right: 1px solid var(--p-line);

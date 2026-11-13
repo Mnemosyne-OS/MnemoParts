@@ -1,7 +1,7 @@
 {
   "name": "@mnemosyne-plugins/mnemo-parts",
   "displayName": "Parts",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "category": "Productivity",
   "icon": "icon.svg",
   "vendor": "Mnemosyne Labs",

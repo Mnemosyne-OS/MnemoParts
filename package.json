@@ -1,6 +1,6 @@
 {
   "name": "@mnemosyne-plugins/mnemo-parts",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "type": "module",
   "description": "Open a 3D model you bring (STEP, GLB, glTF, OBJ, STL), explode it part by part, name the parts and keep your notes on them in your memory.",
